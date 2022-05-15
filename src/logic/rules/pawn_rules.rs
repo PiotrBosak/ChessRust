@@ -1,19 +1,18 @@
 use crate::logic::*;
 
-pub mod pawn_rules {
     use crate::Rank::{Seven, Two};
     use crate::{
         Advance, Board, Color, File, Move, MoveType, Piece, PieceType, Position, Rank, Tile,
     };
 
-    pub fn possible_pawn_moves(board: &Board, position: &Position, color: &Color) -> Vec<Move> {
+    pub fn possible_moves(board: &Board, position: &Position, color: &Color) -> Vec<Move> {
         let mut moves = vec![];
         moves.push(one_tile_move(board, position, color));
         moves.push(two_tile_move(board, position, color));
         moves.into_iter().filter_map(|x| x).collect()
     }
 
-    pub fn possible_pawn_captures(board: &Board, position: &Position, color: &Color) -> Vec<Move> {
+    pub fn possible_captures(board: &Board, position: &Position, color: &Color) -> Vec<Move> {
         let mut moves = vec![];
         moves.push(le_passant(board, position, color));
         moves.push(left_attack(board, position, color));
@@ -182,4 +181,3 @@ pub mod pawn_rules {
             }
         }
     }
-}

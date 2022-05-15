@@ -1,4 +1,3 @@
-pub mod multi_tile_rules {
     use crate::{Advance, Board, Color, Move, Position};
 
     pub fn possible_move_positions(
@@ -46,4 +45,3 @@ pub mod multi_tile_rules {
         let next_position = Position::new(next_file, next_rank);
         Some(next_position)
     }
-}

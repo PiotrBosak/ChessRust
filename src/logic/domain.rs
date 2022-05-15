@@ -52,6 +52,18 @@ impl<T> Advance for T
     }
 }
 
+pub trait ToNumber
+    where Self: Sized {
+    fn to_number(&self) -> i32;
+}
+
+impl<T> ToNumber for T
+    where T: UsizeIso + Sized {
+    fn to_number(&self) -> i32 {
+        self.to_usize()
+    }
+}
+
 impl UsizeIso for File {
     fn to_usize(&self) -> i32 {
         match self {
@@ -115,6 +127,7 @@ pub struct Position {
     pub file: File,
     pub rank: Rank,
 }
+
 impl Position {
     pub fn new(file: File, rank: Rank) -> Self {
         Position { file, rank }
@@ -134,6 +147,7 @@ pub struct Move {
     pub to: Position,
     pub move_type: MoveType,
 }
+
 impl Move {
     pub fn new(from: Position, to: Position, move_type: MoveType) -> Self {
         Move { from, to, move_type }

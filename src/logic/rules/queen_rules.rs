@@ -1,9 +1,8 @@
-pub mod queen_rules {
     use crate::{Board, Color, Move, MoveType, Position};
-    use crate::logic::rules::bishop_rules::bishop_rules::possible_moves as bishop_moves;
-    use crate::logic::rules::bishop_rules::bishop_rules::possible_captures as bishop_captures;
-    use crate::logic::rules::rook_rules::rook_rules::possible_moves as rook_moves;
-    use crate::logic::rules::rook_rules::rook_rules::possible_captures as rook_captures;
+    use crate::logic::rules::bishop_rules::possible_moves as bishop_moves;
+    use crate::logic::rules::bishop_rules::possible_captures as bishop_captures;
+    use crate::logic::rules::rook_rules::possible_moves as rook_moves;
+    use crate::logic::rules::rook_rules::possible_captures as rook_captures;
 
     pub fn possible_moves(board: &Board, position: Position) -> Vec<Move> {
         let mut moves = vec![];
@@ -17,5 +16,4 @@ pub mod queen_rules {
         captures.append(&mut bishop_captures(board, position, color));
         captures.append(&mut rook_captures(board, position, color));
         captures
-    }
 }
