@@ -1,28 +1,49 @@
 use std::collections::HashMap;
 use crate::logic::File;
+use crate::logic::rules;
 use crate::logic::{Move, Piece, Position, Rank, Tile, Advance, PieceType, Color};
 
 pub struct Board {
     pub tiles: HashMap<Position, Tile>,
-    previous_move: Option<Move>,
+    pub previous_move: Option<Move>,
 }
 
 impl Board {
-    pub fn tile_at(&self, position: Position) -> &Tile {
+    pub fn tile_at(&self, position: &Position) -> &Tile {
         self.tiles
-            .get(&position)
+            .get(position)
             .expect("No tile at position, should never happen")
     }
+
     pub fn update_board(&mut self, move_: Move, new_tile: Tile) {
         self.tiles.insert(new_tile.position, new_tile);
         self.previous_move = Some(move_);
     }
+
     pub fn new() -> Board {
         Board {
             tiles: Board::make_tiles(),
             previous_move: None,
         }
     }
+
+    pub fn possible_moves(&self, position: &Position) -> Vec<Move> {
+        let piece = self.tile_at(position).current_piece;
+        piece
+            .map(|p| {
+                match p.piece_type {
+                    PieceType::Pawn => rules::possible_moves(&self, position, &p),
+                    _ => vec![],
+                    // Some(PieceType::Rook) => self.possible_rook_moves(position),
+                    // Some(PieceType::Knight) => self.possible_knight_moves(position),
+                    // Some(PieceType::Bishop) => self.possible_bishop_moves(position),
+                    // Some(PieceType::Queen) => self.possible_queen_moves(position),
+                    // Some(PieceType::King) => self.possible_king_moves(position),
+                }
+            })
+            .unwrap_or(vec![])
+    }
+
     fn make_tiles() -> HashMap<Position, Tile> {
         let mut tiles = HashMap::new();
         tiles.extend(Board::create_tiles(
@@ -47,7 +68,6 @@ impl Board {
         tiles.extend(Board::create_tile_with_black_queen());
         tiles.extend(Board::create_tile_with_white_king());
         tiles.extend(Board::create_tile_with_white_queen());
-
         tiles
     }
 
@@ -109,7 +129,6 @@ impl Board {
         tiles
     }
 
-    // fn create_tiles_with_black_pawns() -> HashMap<Position, Tile> {}
     fn create_tiles(rank: Rank, piece: Option<Piece>) -> HashMap<Position, Tile> {
         let mut current_file = Some(File::A);
         let mut tiles = HashMap::new();

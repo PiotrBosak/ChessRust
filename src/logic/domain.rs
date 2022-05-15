@@ -26,9 +26,9 @@ trait UsizeIso
     where
         Self: Sized,
 {
-    fn to_usize(&self) -> usize;
-    fn from_usize(u: usize) -> Option<Self>;
-    fn from_usize_unsafe(u: usize) -> Self {
+    fn to_usize(&self) -> i32;
+    fn from_usize(u: i32) -> Option<Self>;
+    fn from_usize_unsafe(u: i32) -> Self {
         UsizeIso::from_usize(u).expect("Illegal operation")
     }
 }
@@ -37,8 +37,8 @@ pub trait Advance
     where
         Self: Sized,
 {
-    fn advance(&self, n: usize) -> Option<Self>;
-    fn advance_unsafe(&self, n: usize) -> Self {
+    fn advance(&self, n: i32) -> Option<Self>;
+    fn advance_unsafe(&self, n: i32) -> Self {
         self.advance(n).expect("invalid position")
     }
 }
@@ -47,13 +47,13 @@ impl<T> Advance for T
     where
         T: UsizeIso + Sized,
 {
-    fn advance(&self, n: usize) -> Option<Self> {
+    fn advance(&self, n: i32) -> Option<Self> {
         UsizeIso::from_usize(self.to_usize() + n)
     }
 }
 
 impl UsizeIso for File {
-    fn to_usize(&self) -> usize {
+    fn to_usize(&self) -> i32 {
         match self {
             File::A => 1,
             File::B => 2,
@@ -66,7 +66,7 @@ impl UsizeIso for File {
         }
     }
 
-    fn from_usize(u: usize) -> Option<Self> {
+    fn from_usize(u: i32) -> Option<Self> {
         match u {
             1 => Some(File::A),
             2 => Some(File::B),
@@ -82,7 +82,7 @@ impl UsizeIso for File {
 }
 
 impl UsizeIso for Rank {
-    fn to_usize(&self) -> usize {
+    fn to_usize(&self) -> i32 {
         match self {
             Rank::One => 1,
             Rank::Two => 2,
@@ -95,7 +95,7 @@ impl UsizeIso for Rank {
         }
     }
 
-    fn from_usize(u: usize) -> Option<Self> {
+    fn from_usize(u: i32) -> Option<Self> {
         match u {
             1 => Some(Rank::One),
             2 => Some(Rank::Two),
@@ -122,8 +122,9 @@ impl Position {
 }
 
 pub enum MoveType {
-    Normal,
-    TwoTileMove,
+    Capture,
+    Move,
+    TwoTilePawnMove,
     Castling,
     LePassant,
 }
@@ -133,9 +134,14 @@ pub struct Move {
     pub to: Position,
     pub move_type: MoveType,
 }
+impl Move {
+    pub fn new(from: Position, to: Position, move_type: MoveType) -> Self {
+        Move { from, to, move_type }
+    }
+}
 
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum PieceType {
     Pawn,
     Knight,
@@ -145,16 +151,16 @@ pub enum PieceType {
     King,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Color {
     White,
     Black,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Piece {
-    piece_type: PieceType,
-    color: Color,
+    pub piece_type: PieceType,
+    pub color: Color,
 }
 
 impl Piece {
@@ -185,5 +191,12 @@ impl Tile {
             current_piece: None,
             has_moved: false,
         }
+    }
+
+    pub fn has_piece(&self) -> bool {
+        self.current_piece.is_some()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.current_piece.is_none()
     }
 }
