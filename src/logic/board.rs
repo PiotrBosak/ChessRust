@@ -30,19 +30,16 @@ impl Board {
     pub fn possible_moves(&self, position: &Position) -> Vec<Move> {
         let piece = self.tile_at(position).current_piece;
         piece
-            .map(|p| {
-                match p.piece_type {
-                    PieceType::Pawn => rules::possible_moves(&self, position, &p),
-                    _ => vec![],
-                    // Some(PieceType::Rook) => self.possible_rook_moves(position),
-                    // Some(PieceType::Knight) => self.possible_knight_moves(position),
-                    // Some(PieceType::Bishop) => self.possible_bishop_moves(position),
-                    // Some(PieceType::Queen) => self.possible_queen_moves(position),
-                    // Some(PieceType::King) => self.possible_king_moves(position),
-                }
-            })
+            .map(|p| rules::possible_moves(&self, position, &p))
             .unwrap_or(vec![])
     }
+    pub fn possible_captures(&self, position: &Position) -> Vec<Move> {
+        let piece = self.tile_at(position).current_piece;
+        piece
+            .map(|p| rules::possible_captures(&self, position, &p))
+            .unwrap_or(vec![])
+    }
+
 
     fn make_tiles() -> HashMap<Position, Tile> {
         let mut tiles = HashMap::new();

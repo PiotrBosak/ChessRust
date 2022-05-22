@@ -34,7 +34,7 @@ fn castling_move(board: &Board, position: Position, color: &Color, is_left_rook:
 }
 
 
-fn find_rook_tile<'a >(board: &'a Board, position: &Position, rook_file: File) -> Option<&'a Tile> {
+fn find_rook_tile<'a>(board: &'a Board, position: &Position, rook_file: File) -> Option<&'a Tile> {
     let tile = board.tile_at(position);
     let rook_position = Position::new(rook_file, tile.position.rank);
     let board_tile = board.tile_at(&rook_position);

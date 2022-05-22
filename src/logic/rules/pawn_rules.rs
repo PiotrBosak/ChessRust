@@ -1,9 +1,5 @@
-use crate::logic::*;
+use crate::{Rank::{Seven, Two}, Advance, Board, Color, Move, MoveType, Piece, PieceType, Position, Tile};
 
-    use crate::Rank::{Seven, Two};
-    use crate::{
-        Advance, Board, Color, File, Move, MoveType, Piece, PieceType, Position, Rank, Tile,
-    };
 
     pub fn possible_moves(board: &Board, position: &Position, color: &Color) -> Vec<Move> {
         let mut moves = vec![];
