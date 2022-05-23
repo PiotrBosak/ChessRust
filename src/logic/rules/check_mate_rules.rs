@@ -31,4 +31,3 @@ fn is_enemy_color(tile: &Tile, king_color: &Color) -> bool {
         .is_some()
 }
 
-// fn king_cannot_be_defended(king_color: &Color ,game)

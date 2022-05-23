@@ -11,3 +11,4 @@ mod check_mate_rules;
 
 
 pub use rules::*;
+pub use check_mate_rules::*;

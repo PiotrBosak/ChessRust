@@ -1,29 +1,94 @@
 use std::collections::HashMap;
+use std::num::IntErrorKind::PosOverflow;
 use crate::logic::File;
-use crate::logic::rules;
 use crate::logic::{Move, Piece, Position, Rank, Tile, Advance, PieceType, Color};
+use crate::logic::rules;
+use crate::MoveType;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Board {
     pub tiles: HashMap<Position, Tile>,
     pub previous_move: Option<Move>,
 }
 
 impl Board {
+    pub fn new() -> Board {
+        Board {
+            tiles: Board::make_tiles(),
+            previous_move: None,
+        }
+    }
+
     pub fn tile_at(&self, position: &Position) -> &Tile {
         self.tiles
             .get(position)
             .expect("No tile at position, should never happen")
     }
 
-    pub fn update_board(&mut self, move_: Move, new_tile: Tile) {
-        self.tiles.insert(new_tile.position, new_tile);
-        self.previous_move = Some(move_);
+    pub fn make_move(&self, move_: &Move) -> Option<Board> {
+        match &move_.move_type {
+            MoveType::Capture | MoveType::Move | MoveType::TwoTilePawnMove =>
+                self.make_normal_move(&move_.from, &move_.to),
+            MoveType::Castling =>
+                self.make_castling(&move_.from, &move_.to),
+            MoveType::LePassant =>
+                self.make_le_passant(&move_.from, &move_.to)
+        }
     }
 
-    pub fn new() -> Board {
-        Board {
-            tiles: Board::make_tiles(),
-            previous_move: None,
+    fn make_normal_move(&self, from: &Position, to: &Position) -> Option<Board> {
+        let mut new_board = self.clone();
+        let tile_from = new_board.tile_at(from);
+        let piece_from = tile_from.current_piece?;
+        let new_tile_to = Tile::with_piece(*to, piece_from);
+        let new_tile_from = Tile::empty(*from);
+        new_board.tiles.insert(*to, new_tile_to.mark_moved());
+        new_board.tiles.insert(*from, new_tile_from.mark_moved());
+        if !rules::is_king_checked(&new_board, &piece_from.color) {
+            Some(new_board)
+        } else {
+            None
+        }
+    }
+
+    fn make_castling(&self, from: &Position, to: &Position) -> Option<Board> {
+        let mut new_board = self.clone();
+        let king_tile = new_board.tile_at(from);
+        let king_piece = king_tile.current_piece?;
+        let rook_file = if from.file == File::B { File::A } else { File::H };
+        let new_rook_file = if from.file == File::B { File::C } else { File::F };
+        let rook_position = Position::new(rook_file, from.rank);
+        let new_rook_position = Position::new(new_rook_file, from.rank);
+        let rook_tile = new_board.tile_at(&rook_position);
+        let rook_piece = rook_tile.current_piece?;
+
+        new_board.tiles.insert(*from, Tile::empty(*from).mark_moved());
+        new_board.tiles.insert(*to, Tile::with_piece(*to, king_piece).mark_moved());
+        new_board.tiles.insert(rook_position, Tile::empty(rook_position));
+        new_board.tiles.insert(new_rook_position, Tile::with_piece(new_rook_position, rook_piece));
+        if !rules::is_king_checked(&new_board, &king_piece.color) {
+            Some(new_board)
+        } else {
+            None
+        }
+    }
+    fn make_le_passant(&self, from: &Position, to: &Position) -> Option<Board> {
+        let mut new_board = self.clone();
+        let from_tile = new_board.tile_at(from);
+        let attacker_piece = from_tile.current_piece?;
+        let difference = if attacker_piece.color == Color::White {-1} else {1};
+        let captured_rank = to.rank.advance(difference)?;
+        let captured_position = Position::new(to.file, captured_rank);
+        let tile_from = Tile::empty(*from);
+        let tile_to = Tile::with_piece(*to, attacker_piece);
+        let captured_tile = Tile::empty(captured_position);
+        new_board.tiles.insert(*from, tile_from.mark_moved());
+        new_board.tiles.insert(*to, tile_to.mark_moved());
+        new_board.tiles.insert(captured_position, captured_tile.mark_moved());
+        if !rules::is_king_checked(&new_board, &attacker_piece.color) {
+            Some(new_board)
+        } else {
+            None
         }
     }
 
@@ -32,6 +97,13 @@ impl Board {
         piece
             .map(|p| rules::possible_moves(&self, position, &p))
             .unwrap_or(vec![])
+    }
+    pub fn possible_valid_moves(&self, position: &Position) -> Vec<Move> {
+        let mut moves = self.possible_moves(position);
+        moves.append(&mut self.possible_captures(position));
+        moves.into_iter()
+            .filter(|m| self.make_move(&m).is_some())
+            .collect()
     }
     pub fn possible_captures(&self, position: &Position) -> Vec<Move> {
         let piece = self.tile_at(position).current_piece;

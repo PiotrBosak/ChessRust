@@ -1,7 +1,6 @@
-#[cfg(test)]
 mod board_tests {
     use std::collections::HashMap;
-    use chessTUI::{File, Piece, Position, Tile};
+    use chessTUI::{Color, File, Piece, PieceType, Position, Tile};
     use chessTUI::Rank;
     use chessTUI::Board;
 
@@ -35,5 +34,20 @@ mod board_tests {
             .map(|(_, tile)| tile)
             .collect::<Vec<Tile>>();
         assert_eq!(empty_tiles.len(), 32);
+    }
+
+    #[test]
+    fn board_has_8_white_pawns() {
+        let board = Board::new();
+        let white_pawns =
+            board.tiles
+                .into_iter()
+                .filter_map(|(_, tile)| {
+                    tile.current_piece
+                        .filter(|piece|
+                            piece.piece_type == PieceType::Pawn && piece.color == Color::White)
+                })
+                .collect::<Vec<Piece>>();
+        assert_eq!(white_pawns.len(), 8);
     }
 }

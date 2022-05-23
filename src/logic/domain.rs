@@ -134,6 +134,7 @@ impl Position {
     }
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum MoveType {
     Capture,
     Move,
@@ -142,6 +143,7 @@ pub enum MoveType {
     LePassant,
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Move {
     pub from: Position,
     pub to: Position,
@@ -184,6 +186,7 @@ impl Piece {
 }
 
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Tile {
     pub position: Position,
     pub current_piece: Option<Piece>,
@@ -197,6 +200,11 @@ impl Tile {
             current_piece: Some(piece),
             has_moved: false,
         }
+    }
+
+    pub fn mark_moved(mut self) -> Self {
+        self.has_moved = true;
+        self
     }
 
     pub fn empty(position: Position) -> Tile {
