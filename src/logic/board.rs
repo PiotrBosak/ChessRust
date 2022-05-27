@@ -19,13 +19,27 @@ impl Board {
         }
     }
 
+    //todo zrób może jakoś tak, żeby ta funkcja nie byla widoczna, albo żeby
+    //board nie byl widoczny jak masz instance game
+    pub fn make_move(&self, from: &Position, to: &Position) -> Option<Board> {
+        let valid_moves = self.possible_valid_moves(from);
+        let move_ = valid_moves
+            .into_iter()
+            .find(|m| m.to == *to)?;
+        let new_board =
+            self
+                .move_(&move_)
+                .map(|board| Board {tiles: board.tiles, previous_move: Some(move_)})?;
+        Some(new_board)
+    }
+
     pub fn tile_at(&self, position: &Position) -> &Tile {
         self.tiles
             .get(position)
             .expect("No tile at position, should never happen")
     }
 
-    pub fn make_move(&self, move_: &Move) -> Option<Board> {
+    fn move_(&self, move_: &Move) -> Option<Board> {
         match &move_.move_type {
             MoveType::Capture | MoveType::Move | MoveType::TwoTilePawnMove =>
                 self.make_normal_move(&move_.from, &move_.to),
@@ -64,8 +78,8 @@ impl Board {
 
         new_board.tiles.insert(*from, Tile::empty(*from).mark_moved());
         new_board.tiles.insert(*to, Tile::with_piece(*to, king_piece).mark_moved());
-        new_board.tiles.insert(rook_position, Tile::empty(rook_position));
-        new_board.tiles.insert(new_rook_position, Tile::with_piece(new_rook_position, rook_piece));
+        new_board.tiles.insert(rook_position, Tile::empty(rook_position).mark_moved());
+        new_board.tiles.insert(new_rook_position, Tile::with_piece(new_rook_position, rook_piece).mark_moved());
         if !rules::is_king_checked(&new_board, &king_piece.color) {
             Some(new_board)
         } else {
@@ -76,7 +90,7 @@ impl Board {
         let mut new_board = self.clone();
         let from_tile = new_board.tile_at(from);
         let attacker_piece = from_tile.current_piece?;
-        let difference = if attacker_piece.color == Color::White {-1} else {1};
+        let difference = if attacker_piece.color == Color::White { -1 } else { 1 };
         let captured_rank = to.rank.advance(difference)?;
         let captured_position = Position::new(to.file, captured_rank);
         let tile_from = Tile::empty(*from);
@@ -102,7 +116,7 @@ impl Board {
         let mut moves = self.possible_moves(position);
         moves.append(&mut self.possible_captures(position));
         moves.into_iter()
-            .filter(|m| self.make_move(&m).is_some())
+            .filter(|m| self.move_(&m).is_some())
             .collect()
     }
     pub fn possible_captures(&self, position: &Position) -> Vec<Move> {

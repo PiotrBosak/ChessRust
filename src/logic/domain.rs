@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter};
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum File {
     A,

@@ -1,9 +1,11 @@
 use crate::{Board, Position};
 
+//lepiej, żeby frontend nie używal boarda bezposrenio tylko zawsze posrednio przez game
+//a current board i history bylo prywatne
 pub struct Game {
-    pub current_board: Board,
-    pub history: Vec<Board>,
-    pub turn: Turn,
+    current_board: Board,
+    history: Vec<Board>,
+    turn: Turn,
 }
 
 //todo warto dodac funkcje ktora pokaze faktycznie wszystkie mozliwe ruchy
