@@ -1,4 +1,4 @@
-use crate::{Advance, Board, Color, Move, Position};
+use crate::{Advance, Board, Color, File, Move, Position, Rank};
 
 pub fn possible_move_positions(
     board: &Board,
@@ -8,10 +8,10 @@ pub fn possible_move_positions(
 ) -> Vec<Position> {
     let mut next_position = find_next_position(position, next_rank_diff, next_file_diff);
     let mut vec = vec![];
-    while let Some(position) = next_position {
-        if board.tile_at(&position).is_empty() {
-            vec.push(position);
-        }
+    while let Some(position) = next_position.filter(|pos| {
+        board.tile_at(pos).is_empty()
+    }) {
+        vec.push(position);
         next_position = find_next_position(position, next_rank_diff, next_file_diff);
     }
     vec
@@ -23,19 +23,21 @@ pub fn possible_capture_positions<'a>(
     next_rank_diff: i8,
     next_file_diff: i8,
     color: &Color,
-) -> Vec<Position> {
-    let mut next_position = find_next_position(position, next_rank_diff, next_file_diff);
-    let mut vec = vec![];
-    while let Some(position) = next_position.filter(|pos| {
-        board.tile_at(pos)
-            .current_piece
-            .filter(|piece| piece.color != *color)
-            .is_some()
-    }) {
-        vec.push(position);
-        next_position = find_next_position(position, next_rank_diff, next_file_diff);
+) -> Option<Position> {
+    let mut posistion = find_next_position(position, next_rank_diff, next_file_diff);
+    while let Some(pos) = posistion {
+        match board.tile_at(&pos).current_piece {
+            Some(piece) =>
+                return if &piece.color != color {
+                    Some(pos)
+                } else {
+                    None
+                },
+            None =>
+                posistion = find_next_position(pos, next_rank_diff, next_file_diff)
+        }
     }
-    vec
+    None
 }
 
 fn find_next_position(position: Position, next_rank_diff: i8, next_file_diff: i8) -> Option<Position> {

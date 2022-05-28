@@ -33,7 +33,6 @@ fn castling_move(board: &Board, position: Position, color: &Color, is_left_rook:
     }
 }
 
-
 fn find_rook_tile<'a>(board: &'a Board, position: &Position, rook_file: File) -> Option<&'a Tile> {
     let tile = board.tile_at(position);
     let rook_position = Position::new(rook_file, tile.position.rank);
@@ -65,6 +64,7 @@ fn combinations() -> Vec<(i32, i32)> {
             ((-1)..2).into_iter()
                 .map(move |y| (x, y))
         })
+        .filter(|p| p != &(0, 0))
         .collect::<Vec<(i32, i32)>>();
     combinations.sort();
     combinations.dedup();

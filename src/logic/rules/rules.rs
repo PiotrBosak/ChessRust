@@ -13,7 +13,7 @@ use crate::logic::rules::{
 pub fn possible_moves(board: &Board, position: &Position, piece: &Piece) -> Vec<Move> {
     match piece.piece_type {
         PieceType::Pawn => pawn_rules::possible_moves(board, position, &piece.color),
-        PieceType::Knight => knight_rules::possible_moves(board, position.clone(), &piece.color),
+        PieceType::Knight => knight_rules::possible_moves(board, position.clone()),
         PieceType::Bishop => bishop_rules::possible_moves(board, position.clone()),
         PieceType::Rook => rook_rules::possible_moves(board, position.clone()),
         PieceType::Queen => queen_rules::possible_moves(board, position.clone()),

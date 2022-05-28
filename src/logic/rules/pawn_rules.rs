@@ -67,9 +67,6 @@ fn next_pawn_tile<'a>(
 }
 
 fn le_passant(board: &Board, position: &Position, color: &Color) -> Option<Move> {
-    if *position == Position::new(File::D, Rank::Five) {
-        println!("Hello")
-    }
     le_passant_side(board, position, color, true)
         .or(le_passant_side(board, position, color, false))
 }

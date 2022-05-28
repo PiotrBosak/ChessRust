@@ -7,7 +7,7 @@
             multi_tile_possible_moves(board, position, 0, 1),
             multi_tile_possible_moves(board, position, 0, -1),
             multi_tile_possible_moves(board, position, -1, 0),
-            multi_tile_possible_moves(board, position, -1, 0),
+            multi_tile_possible_moves(board, position, 1, 0),
         ]
             .into_iter()
             .flatten()
