@@ -1,4 +1,3 @@
-
 mod domain;
 mod board;
 mod rules;
