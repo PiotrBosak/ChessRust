@@ -1,14 +1,8 @@
-use crate::logic::*;
-
-use crate::{Board, Color, Move, Piece, PieceType, Position};
 use crate::logic::rules::{
-    pawn_rules,
-    king_rules,
-    knight_rules,
-    rook_rules,
-    queen_rules,
-    bishop_rules,
+    bishop_rules, king_rules, knight_rules, pawn_rules, queen_rules, rook_rules,
 };
+
+use crate::{Board, Move, Piece, PieceType, Position};
 
 pub fn possible_moves(board: &Board, position: &Position, piece: &Piece) -> Vec<Move> {
     match piece.piece_type {
@@ -17,7 +11,7 @@ pub fn possible_moves(board: &Board, position: &Position, piece: &Piece) -> Vec<
         PieceType::Bishop => bishop_rules::possible_moves(board, position.clone()),
         PieceType::Rook => rook_rules::possible_moves(board, position.clone()),
         PieceType::Queen => queen_rules::possible_moves(board, position.clone()),
-        PieceType::King => king_rules::possible_moves(board, position.clone(), &piece.color)
+        PieceType::King => king_rules::possible_moves(board, position.clone(), &piece.color),
     }
 }
 
@@ -28,6 +22,6 @@ pub fn possible_captures(board: &Board, position: &Position, piece: &Piece) -> V
         PieceType::Bishop => bishop_rules::possible_captures(board, position.clone(), &piece.color),
         PieceType::Rook => rook_rules::possible_captures(board, position.clone(), &piece.color),
         PieceType::Queen => queen_rules::possible_captures(board, position.clone(), &piece.color),
-        PieceType::King => king_rules::possible_captures(board, position.clone(), &piece.color)
+        PieceType::King => king_rules::possible_captures(board, position.clone(), &piece.color),
     }
 }

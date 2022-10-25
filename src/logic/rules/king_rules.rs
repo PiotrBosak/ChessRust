@@ -3,6 +3,7 @@ use crate::logic::rules::knight_and_king_rules;
 use crate::logic::rules::check_mate_rules;
 use std::cmp;
 
+
 pub fn possible_moves(board: &Board, position: Position, color: &Color) -> Vec<Move> {
     let mut moves = vec![
         castling_move(board, position, color, false),

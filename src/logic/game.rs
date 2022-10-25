@@ -23,7 +23,7 @@ impl Game {
                 self.update_game(board);
                 Ok(())
             }
-            None => Err("invalid move")
+            None => Err("invalid move"),
         }
     }
 
@@ -36,7 +36,6 @@ impl Game {
         };
     }
 }
-
 
 pub enum Turn {
     White,

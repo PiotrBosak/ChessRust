@@ -1,4 +1,5 @@
-use std::fmt::{Display, Formatter};
+use std::fmt::format;
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum File {
     A,
@@ -24,8 +25,8 @@ pub enum Rank {
 }
 
 trait UsizeIso
-    where
-        Self: Sized,
+where
+    Self: Sized,
 {
     fn to_usize(&self) -> i32;
     fn from_usize(u: i32) -> Option<Self>;
@@ -35,18 +36,18 @@ trait UsizeIso
 }
 
 pub trait Advance
-    where
-        Self: Sized,
+where
+    Self: Sized,
 {
     fn advance(&self, n: i32) -> Option<Self>;
-    fn advance_unsafe(&self, n: i32) -> Self {
+    fn advanc_unsafe(&self, n: i32) -> Self {
         self.advance(n).expect("invalid position")
     }
 }
 
 impl<T> Advance for T
-    where
-        T: UsizeIso + Sized,
+where
+    T: UsizeIso + Sized,
 {
     fn advance(&self, n: i32) -> Option<Self> {
         UsizeIso::from_usize(self.to_usize() + n)
@@ -54,12 +55,16 @@ impl<T> Advance for T
 }
 
 pub trait ToNumber
-    where Self: Sized {
+where
+    Self: Sized,
+{
     fn to_number(&self) -> i32;
 }
 
 impl<T> ToNumber for T
-    where T: UsizeIso + Sized {
+where
+    T: UsizeIso + Sized,
+{
     fn to_number(&self) -> i32 {
         self.to_usize()
     }
@@ -153,10 +158,13 @@ pub struct Move {
 
 impl Move {
     pub fn new(from: Position, to: Position, move_type: MoveType) -> Self {
-        Move { from, to, move_type }
+        Move {
+            from,
+            to,
+            move_type,
+        }
     }
 }
-
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum PieceType {
@@ -185,7 +193,6 @@ impl Piece {
         Piece { piece_type, color }
     }
 }
-
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Tile {

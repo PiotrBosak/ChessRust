@@ -1,5 +1,8 @@
-use crate::{Rank::{Seven, Two}, Advance, Board, Color, Move, MoveType, Piece, PieceType, Position, Tile, File, Rank};
-
+use crate::{
+    Advance, Board, Color, Move, MoveType, PieceType, Position,
+    Rank::{Seven, Two},
+    Tile,
+};
 
 pub fn possible_moves(board: &Board, position: &Position, color: &Color) -> Vec<Move> {
     let mut moves = vec![];
@@ -67,8 +70,7 @@ fn next_pawn_tile<'a>(
 }
 
 fn le_passant(board: &Board, position: &Position, color: &Color) -> Option<Move> {
-    le_passant_side(board, position, color, true)
-        .or(le_passant_side(board, position, color, false))
+    le_passant_side(board, position, color, true).or(le_passant_side(board, position, color, false))
 }
 
 fn le_passant_side(
